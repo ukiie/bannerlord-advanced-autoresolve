@@ -1,4 +1,4 @@
-using AdvancedAutoResolve.Helpers;
+﻿using AdvancedAutoResolve.Helpers;
 using AdvancedAutoResolve.Simulation;
 using AdvancedAutoResolve.Simulation.Models;
 using HarmonyLib;
@@ -18,9 +18,7 @@ namespace AdvancedAutoResolve.HarmonyPatches.MapEventPatches
     {
         private static void Postfix(ref MapEvent __instance, PartyBase attackerParty, PartyBase defenderParty, MapEvent.BattleTypes mapEventType = MapEvent.BattleTypes.None)
         {
-            bool isPlayerInvolved = Hero.MainHero.Id == attackerParty.LeaderHero?.Id || Hero.MainHero.Id == defenderParty.LeaderHero?.Id;
-            
-            if(isPlayerInvolved && SubModule.IsValidEventType(mapEventType))
+            if(SubModule.IsValidEventType(mapEventType))
             {
                 var model = new SimulationModel(__instance, attackerParty, defenderParty);
                 SimulationsPool.AddModelToSimulations(model);
