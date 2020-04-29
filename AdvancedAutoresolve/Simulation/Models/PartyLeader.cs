@@ -8,7 +8,7 @@ namespace AdvancedAutoResolve.Simulation.Models
 {
     internal struct PartyLeader
     {
-        public PartyLeader(int leadershipLevel, int tacticsLevel, bool hasTacticalSuperiorityPerk, bool hasHammerAndAnvilPerk, bool hasPhalanxPerk)
+        internal PartyLeader(int leadershipLevel, int tacticsLevel, bool hasTacticalSuperiorityPerk, bool hasHammerAndAnvilPerk, bool hasPhalanxPerk)
         {
             LeadershipLevel = leadershipLevel;
             TacticsLevel = tacticsLevel;
@@ -17,10 +17,10 @@ namespace AdvancedAutoResolve.Simulation.Models
             HasPhalanxPerk = hasPhalanxPerk;
         }
 
-        public int LeadershipLevel { get; }
-        public int TacticsLevel { get; }
-        public bool HasTacticalSuperiorityPerk { get; }
-        public bool HasHammerAndAnvilPerk { get; }
-        public bool HasPhalanxPerk { get; }
+        internal int LeadershipLevel { get; }
+        internal int TacticsLevel { get; }
+        internal bool HasTacticalSuperiorityPerk { get; }
+        internal bool HasHammerAndAnvilPerk { get; }
+        internal bool HasPhalanxPerk { get; }
     }
 }

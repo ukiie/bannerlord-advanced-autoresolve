@@ -8,16 +8,16 @@ namespace AdvancedAutoResolve.Simulation.Models
 {
     internal struct Modifiers
     {
-        public Modifiers(float attackBonus, float defenseBonus)
+        internal Modifiers(float attackBonus, float defenseBonus)
         {
             AttackBonus = attackBonus;
             DefenseBonus = defenseBonus;
         }
 
-        public float AttackBonus { get; }
-        public float DefenseBonus { get; }
+        internal float AttackBonus { get; }
+        internal float DefenseBonus { get; }
 
-        public static Modifiers GetDefaultModifiers()
+        internal static Modifiers GetDefaultModifiers()
         {
             return new Modifiers(0.7f, 0.7f);
         }

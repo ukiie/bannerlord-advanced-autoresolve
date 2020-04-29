@@ -9,17 +9,16 @@ namespace AdvancedAutoResolve.Simulation.Models
 {
     internal class TroopModel
     {
-        public TroopModel(CharacterObject characterObject, PartyModel partyModel, TroopType troopType)
+        internal TroopModel(CharacterObject characterObject, PartyModel partyModel, TroopType troopType)
         {
             CharacterObject = characterObject;
             PartyModel = partyModel;
             TroopType = troopType;
         }
 
-        public CharacterObject CharacterObject { get; }
-        public bool HasShield { get; }
-        public PartyModel PartyModel { get; }
-        public TroopType TroopType { get; }
+        internal CharacterObject CharacterObject { get; }
+        internal PartyModel PartyModel { get; }
+        internal TroopType TroopType { get; }
 
         internal Modifiers GetModifiersFromTactics()
         {

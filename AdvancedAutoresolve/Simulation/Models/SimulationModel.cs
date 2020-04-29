@@ -12,13 +12,16 @@ namespace AdvancedAutoResolve.Simulation.Models
 {
     internal struct SimulationModel
     {
-        public MBGUID BattleId { get; }
+        internal MBGUID BattleId { get; }
 
-        public ReadOnlyCollection<PartyModel> Parties { get; }
+        private ReadOnlyCollection<PartyModel> Parties { get; }
 
-        public SimulationModel(MapEvent mapEvent, PartyBase attackerParty, PartyBase defenderParty)
+        internal string EventDescription { get; }
+
+        internal SimulationModel(MapEvent mapEvent, PartyBase attackerParty, PartyBase defenderParty)
         {
             BattleId = mapEvent.Id;
+            EventDescription = mapEvent.ToString();
             Parties = new ReadOnlyCollection<PartyModel>(new List<PartyModel> { new PartyModel(defenderParty), new PartyModel(attackerParty) }); // do not change the order of the list
         }
 

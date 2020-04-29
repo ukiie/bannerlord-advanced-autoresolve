@@ -12,16 +12,24 @@ namespace AdvancedAutoResolve.Simulation.Models
     internal class PartyModel
     {
 
-        public bool HasLeader { get; }
+        internal bool HasLeader { get; }
 
         //TODO Change this or add separately all Heros from parties to give exta bonuses to troops from perks
-        public PartyLeader PartyLeader { get; }
-        public InfantryTactics CurrentInfantryTactic { get; private set; } = InfantryTactics.NoTactic;
-        public ArchersTactics CurrentArchersTactic { get; private set; } = ArchersTactics.NoTactic;
-        public CavalryTactics CurrentCavalryTactic { get; private set; } = CavalryTactics.NoTactic;
-        public HorseArchersTactics CurrentHorseArchersTactic { get; private set; } = HorseArchersTactics.NoTactic;
+        internal PartyLeader PartyLeader { get; }
+        internal InfantryTactics CurrentInfantryTactic { get; private set; } = InfantryTactics.NoTactic;
+        internal ArchersTactics CurrentArchersTactic { get; private set; } = ArchersTactics.NoTactic;
+        internal CavalryTactics CurrentCavalryTactic { get; private set; } = CavalryTactics.NoTactic;
+        internal HorseArchersTactics CurrentHorseArchersTactic { get; private set; } = HorseArchersTactics.NoTactic;
 
-        public PartyModel(PartyBase party)
+        internal List<TroopModel> Troops { get; }
+
+        private bool HasInfantry => Troops.Any(t => t.TroopType == TroopType.Infantry);
+        private bool HasArchers => Troops.Any(t => t.TroopType == TroopType.Archer);
+        private bool HasCavalry => Troops.Any(t => t.TroopType == TroopType.Cavalry);
+        private bool HasHorseArchers => Troops.Any(t => t.TroopType == TroopType.HorseArcher);
+
+
+        internal PartyModel(PartyBase party)
         {
             HasLeader = party.LeaderHero != null && party.LeaderHero.HitPoints > 20; // leader hero is present and not wounded
             if (HasLeader)
@@ -46,55 +54,40 @@ namespace AdvancedAutoResolve.Simulation.Models
             Troops.Remove(Troops.Find(t => t.CharacterObject.Id == troopId));
         }
 
-        public List<TroopModel> Troops { get; }
-
-        private bool HasInfantry => Troops.Any(t => t.TroopType == TroopType.Infantry);
-        private bool HasArchers => Troops.Any(t => t.TroopType == TroopType.Archer);
-        private bool HasCavalry => Troops.Any(t => t.TroopType == TroopType.Cavalry);
-        private bool HasHorseArchers => Troops.Any(t => t.TroopType == TroopType.HorseArcher);
-
         internal void AddTroopsFromParty(PartyBase party)
         {
             var troops = party.MemberRoster;
             foreach (var troop in troops)
             {
                 int totalNumber = troop.Number - troop.WoundedNumber;
-                if (troop.Character.IsInfantry && !troop.Character.IsArcher && !troop.Character.IsMounted)
+                var troopType = DecideTroopType(troop.Character);
+
+                while (totalNumber-- > 0)
                 {
-                    while (totalNumber-- > 0)
-                    {
-                        Troops.Add(new TroopModel(troop.Character, this, TroopType.Infantry));
-                    }
-                }
-                else if (troop.Character.IsInfantry && troop.Character.IsArcher && !troop.Character.IsMounted)
-                {
-                    while (totalNumber-- > 0)
-                    {
-                        Troops.Add(new TroopModel(troop.Character, this, TroopType.Archer));
-                    }
-                }
-                else if (troop.Character.IsInfantry && !troop.Character.IsArcher && troop.Character.IsMounted)
-                {
-                    while (totalNumber-- > 0)
-                    {
-                        Troops.Add(new TroopModel(troop.Character, this, TroopType.Cavalry));
-                    }
-                }
-                else if (!troop.Character.IsInfantry && troop.Character.IsArcher && troop.Character.IsMounted)
-                {
-                    while (totalNumber-- > 0)
-                    {
-                        Troops.Add(new TroopModel(troop.Character, this, TroopType.HorseArcher));
-                    }
-                }
-                else
-                {
-                    while (totalNumber-- > 0)
-                    {
-                        Troops.Add(new TroopModel(troop.Character, this, TroopType.Infantry));
-                    }
+                    Troops.Add(new TroopModel(troop.Character, this, troopType));
                 }
             }
+            if(party.MobileParty.AttachedParties != null)
+            {
+                foreach(var attachedParty in party.MobileParty.AttachedParties)
+                {
+                    AddTroopsFromParty(attachedParty.Party);
+                }
+            }
+        }
+
+        private TroopType DecideTroopType(CharacterObject troop)
+        {
+            if (troop.CurrentFormationClass == FormationClass.Infantry)
+                return TroopType.Infantry;
+            if (troop.CurrentFormationClass == FormationClass.Ranged)
+                return TroopType.Archer;
+            if (troop.CurrentFormationClass == FormationClass.Cavalry)
+                return TroopType.Cavalry;
+            if (troop.CurrentFormationClass == FormationClass.HorseArcher)
+                return TroopType.HorseArcher;
+
+            return TroopType.Infantry;
         }
 
         private int GetTotalNumberOfFormations()
