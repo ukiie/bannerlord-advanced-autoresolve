@@ -27,7 +27,7 @@ namespace AdvancedAutoResolve.HarmonyPatches.DefaultCombatSimulationModelPatches
                 catch (Exception ex)
                 {
 #if DEBUG
-                    MessageHelper.DisplayText($"{simulationModel.BattleId} Critical error simulating hit: " + ex.Message, DisplayTextStyle.Warning);
+                    MessageHelper.DisplayText($"{simulationModel.EventDescription} Critical error simulating hit: " + ex.Message, DisplayTextStyle.Warning);
 #endif
                     return true;
                 }

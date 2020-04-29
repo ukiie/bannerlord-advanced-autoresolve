@@ -1,4 +1,4 @@
-﻿using AdvancedAutoResolve.Helpers;
+using AdvancedAutoResolve.Helpers;
 using AdvancedAutoResolve.Simulation;
 using AdvancedAutoResolve.Simulation.Models;
 using HarmonyLib;
@@ -25,7 +25,7 @@ namespace AdvancedAutoResolve.HarmonyPatches.MapEventPatches
                 var model = new SimulationModel(__instance, attackerParty, defenderParty);
                 SimulationsPool.AddModelToSimulations(model);
 #if DEBUG
-                MessageHelper.DisplayText($"Initialized battle {model.BattleId}", DisplayTextStyle.Info);
+                MessageHelper.DisplayText($"Initialized {model.EventDescription}", DisplayTextStyle.Info);
 #endif
             }
         }

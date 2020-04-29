@@ -18,7 +18,7 @@ namespace AdvancedAutoResolve.HarmonyPatches.MapEventPatches
             if (SubModule.IsValidEventType(__instance.EventType) && SimulationsPool.TryRemoveSimulationModel(__instance.Id, out var model))
             {
 #if DEBUG
-                MessageHelper.DisplayText($"Battle {model.BattleId} finished.", DisplayTextStyle.Info);
+                MessageHelper.DisplayText($"Finished {model.EventDescription}", DisplayTextStyle.Info);
 #endif
             }
 

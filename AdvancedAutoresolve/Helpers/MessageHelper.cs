@@ -23,7 +23,7 @@ namespace AdvancedAutoResolve.Helpers
             switch (displayTextStyle)
             {
                 case DisplayTextStyle.Info:
-                    return new Color(0, 0, 1);
+                    return new Color(0.12f, 0.73f, 1f);
                 case DisplayTextStyle.Warning:
                     return new Color(1, 0, 0);
                 default:
@@ -32,7 +32,7 @@ namespace AdvancedAutoResolve.Helpers
         }
     }
 
-    public enum DisplayTextStyle
+    internal enum DisplayTextStyle
     {
         Normal,
         Info,
