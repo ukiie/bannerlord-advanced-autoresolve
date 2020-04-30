@@ -124,6 +124,9 @@ namespace AdvancedAutoResolve.Models
             }
 
             int totalNumberOfFormations = GetTotalNumberOfFormations();
+            if (totalNumberOfFormations < 1)
+                return;
+
             int numberOfFormationsThatWillSwitchTactics = SubModule.Random.Next(1, totalNumberOfFormations);
 
             bool changedInfTactic = false;
@@ -134,6 +137,7 @@ namespace AdvancedAutoResolve.Models
             while (numberOfFormationsThatWillSwitchTactics > 0)
             {
                 int formationIndex = SubModule.Random.Next(1, 4);
+                formationIndex = ChangeFormationIndexIfFormationIsEmpty(formationIndex);
 
                 if (!changedInfTactic && formationIndex == (int)TroopType.Infantry && HasInfantry)
                 {
@@ -160,6 +164,20 @@ namespace AdvancedAutoResolve.Models
                     numberOfFormationsThatWillSwitchTactics--;
                 }
             }
+        }
+
+        private int ChangeFormationIndexIfFormationIsEmpty(int currentIndex)
+        {
+            if (currentIndex == (int)TroopType.Infantry && !HasInfantry)
+                currentIndex += 1;
+            if (currentIndex == (int)TroopType.Archer && !HasArchers)
+                currentIndex += 1;
+            if (currentIndex == (int)TroopType.Cavalry && !HasCavalry)
+                currentIndex += 1;
+            if (currentIndex == (int)TroopType.HorseArcher && !HasHorseArchers)
+                currentIndex = 1;
+
+            return currentIndex;
         }
 
         private void RollNewInfantryTactic()
