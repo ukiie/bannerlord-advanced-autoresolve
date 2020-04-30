@@ -2,7 +2,7 @@
 using AdvancedAutoResolve.Simulation.Models;
 using System;
 using System.Collections.Concurrent;
-using TaleWorlds.ObjectSystem;
+using TaleWorlds.Core;
 
 namespace AdvancedAutoResolve.Simulation
 {
@@ -12,10 +12,17 @@ namespace AdvancedAutoResolve.Simulation
 
         internal static void AddModelToSimulations(SimulationModel simulationModel)
         {
-            if(!pool.TryAdd(simulationModel.BattleId, simulationModel))
+            if (!pool.TryAdd(simulationModel.BattleId, simulationModel))
             {
 #if DEBUG
-                MessageHelper.DisplayText($"{simulationModel.BattleId} Could not add a battle to advanced simulation! Will use default simulation instead", DisplayTextStyle.Warning);
+                if (pool.TryGetValue(simulationModel.BattleId, out var existingModel))
+                {
+                    MessageHelper.DisplayText($"{existingModel.BattleId} Already added", DisplayTextStyle.Warning);
+                }
+                else
+                {
+                    MessageHelper.DisplayText($"{simulationModel.BattleId} Could not add a battle to advanced simulation! Will use default simulation instead", DisplayTextStyle.Warning);
+                }
 #endif
             }
         }

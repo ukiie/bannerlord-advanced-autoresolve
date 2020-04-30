@@ -172,9 +172,6 @@
     <Reference Include="TaleWorlds.Network">
       <HintPath>$(BannerlordPath)\bin\Win64_Shipping_Client\TaleWorlds.Network.dll</HintPath>
     </Reference>
-    <Reference Include="TaleWorlds.ObjectSystem">
-      <HintPath>$(BannerlordPath)\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
-    </Reference>
     <Reference Include="TaleWorlds.PlatformService">
       <HintPath>$(BannerlordPath)\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.dll</HintPath>
     </Reference>
