@@ -22,13 +22,32 @@ namespace AdvancedAutoResolve
 
         public void TroopNumberChanged(BattleSideEnum side, IBattleCombatant battleCombatant, BasicCharacterObject character, int number = 0, int numberKilled = 0, int numberWounded = 0, int numberRouted = 0, int killCount = 0, int numberReadyToUpgrade = 0)
         {
-            if(battleCombatant is PartyBase party)
+            TroopNumberChangedInternal(side, battleCombatant, character, number, numberKilled, numberWounded, numberRouted, killCount, numberReadyToUpgrade);
+        }
+
+        internal static void TroopNumberChangedInternal(BattleSideEnum side, IBattleCombatant battleCombatant, BasicCharacterObject character, int number = 0, int numberKilled = 0, int numberWounded = 0, int numberRouted = 0, int killCount = 0, int numberReadyToUpgrade = 0)
+        {
+            if (battleCombatant is PartyBase party)
             {
-                if(party.MapEvent != null && SubModule.IsValidEventType(party.MapEvent.EventType))
+                if (party.MapEvent != null && SubModule.IsValidEventType(party.MapEvent.EventType))
                 {
-                    if(SimulationsPool.TryGetSimulationModel(party.MapEvent.Id, out SimulationModel simulationModel))
+                    if (SimulationsPool.TryGetSimulationModel(party.MapEvent.Id, out SimulationModel simulationModel))
                     {
-                        simulationModel.RemoveTroop(side, character.Id);
+                        while (numberKilled > 0)
+                        {
+                            simulationModel.RemoveTroop(side, character.Id);
+                            numberKilled--;
+                        }
+                        while (numberWounded > 0)
+                        {
+                            simulationModel.RemoveTroop(side, character.Id);
+                            numberWounded--;
+                        }
+                        while (numberRouted > 0)
+                        {
+                            simulationModel.RemoveTroop(side, character.Id);
+                            numberRouted--;
+                        }
                     }
                 }
             }

@@ -1,4 +1,5 @@
-﻿using AdvancedAutoResolve.Simulation;
+﻿using AdvancedAutoResolve.Helpers;
+using AdvancedAutoResolve.Simulation;
 using AdvancedAutoResolve.Simulation.Models;
 using HarmonyLib;
 using System;
@@ -19,7 +20,22 @@ namespace AdvancedAutoResolve.HarmonyPatches.MapEventPatches
         {
             if (SimulationsPool.TryGetSimulationModel(__instance.Id, out SimulationModel simulationModel))
             {
-                simulationModel.ChangeTactics(side);
+                // battle still continues
+                if (__instance.BattleState == BattleState.None)
+                {
+                    simulationModel.ChangeTactics(side);
+                }
+                else
+                {
+                    // battle is done
+                    if (SimulationsPool.TryRemoveSimulationModel(__instance.Id, out var model))
+                    {
+                        if (model.IsPlayerInvolved)
+                        {
+                            MessageHelper.DisplayText($"Finished {model.EventDescription}", DisplayTextStyle.Info);
+                        }
+                    }
+                }
             }
         }
     }

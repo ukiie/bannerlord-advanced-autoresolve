@@ -16,7 +16,6 @@ namespace AdvancedAutoResolve
         {
             Harmony harmony = new Harmony("com.ukie.advanced-autoresolve");
             harmony.PatchAll(typeof(SubModule).Assembly);
-
             Random = new Random();
         }
 
@@ -28,6 +27,29 @@ namespace AdvancedAutoResolve
         internal static bool IsValidEventType(BattleTypes battleType)
         {
             return battleType == BattleTypes.FieldBattle;
+        }
+
+        public override void OnCampaignStart(Game game, object starterObject)
+        {
+            if (game.GameType is Campaign)
+            {
+                CampaignGameStarter gameInitializer = (CampaignGameStarter)starterObject;
+                AddBehaviors(gameInitializer);
+            }
+        }
+
+        protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
+        {
+            if (game.GameType is Campaign)
+            {
+                CampaignGameStarter gameStarterObject2 = (CampaignGameStarter)gameStarterObject;
+                AddBehaviors(gameStarterObject2);
+            }
+        }
+
+        private void AddBehaviors(CampaignGameStarter gameInitializer)
+        {
+            gameInitializer.AddBehavior(new AdvancedAutoResolveLogic());
         }
     }
 }

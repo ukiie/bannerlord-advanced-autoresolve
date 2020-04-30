@@ -38,6 +38,17 @@ namespace AdvancedAutoResolve.Simulation.Models
         }
 
         /// <summary>
+        /// Vanilla troop power plus 5% with each troop tier (up to 30% at T6)
+        /// </summary>
+        internal float GetPower()
+        {
+            var basePower = CharacterObject.GetPower();
+            var tier = (float)CharacterObject.Tier;
+            var finalPower = basePower + tier / 20f; // 5% extra power per unit tier
+            return finalPower;
+        }
+
+        /// <summary>
         /// 5% bonus per 100 levels of a skill
         /// </summary>
         internal float GetAttackModifierFromLeader()
@@ -51,6 +62,16 @@ namespace AdvancedAutoResolve.Simulation.Models
             }
 
             return modifier;
+        }
+
+        /// <summary>
+        /// Decide whether the defender would be attacked at this point in time, or not.
+        /// </summary>
+        /// <param name="defender"></param>
+        /// <returns></returns>
+        internal bool DoesItMakeSenseToAttackThisUnit(TroopModel defender)
+        {
+            return true;
         }
 
         /// <summary>
