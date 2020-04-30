@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Module>
-  <Name value="ukie's Advanced AutoResolve"/>
+  <Name value="Advanced AutoResolve"/>
   <Id value="AdvancedAutoResolve"/>
   <Version value="v1.0.0"/>
   <SingleplayerModule value="true"/>
@@ -14,7 +14,7 @@
   </DependedModules>
   <SubModules>
     <SubModule>
-      <Name value="ukie's Advanced Autoresolve"/>
+      <Name value="Advanced AutoResolve"/>
       <DLLName value="AdvancedAutoResolve.dll"/>
       <SubModuleClassType value="AdvancedAutoResolve.SubModule"/>
       <Tags>
