@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AdvancedAutoResolve.Simulation;
+using System;
 using TaleWorlds.CampaignSystem;
 
-namespace AdvancedAutoResolve.Simulation.Models
+namespace AdvancedAutoResolve.Models
 {
-    internal class TroopModel
+    internal class Troop
     {
-        internal TroopModel(CharacterObject characterObject, PartyModel partyModel, TroopType troopType)
+        internal Troop(CharacterObject characterObject, Party partyModel, TroopType troopType)
         {
             CharacterObject = characterObject;
             PartyModel = partyModel;
@@ -17,7 +14,7 @@ namespace AdvancedAutoResolve.Simulation.Models
         }
 
         internal CharacterObject CharacterObject { get; }
-        internal PartyModel PartyModel { get; }
+        internal Party PartyModel { get; }
         internal TroopType TroopType { get; }
 
         internal Modifiers GetModifiersFromTactics()
@@ -67,10 +64,16 @@ namespace AdvancedAutoResolve.Simulation.Models
         /// <summary>
         /// Decide whether the defender would be attacked at this point in time, or not.
         /// </summary>
-        /// <param name="defender"></param>
-        /// <returns></returns>
-        internal bool DoesItMakeSenseToAttackThisUnit(TroopModel defender)
+        internal bool DoesItMakeSenseToAttackThisUnit(Troop defender)
         {
+            if (TroopType == TroopType.Infantry)
+            {
+                if (defender.TroopType == TroopType.Archer && defender.PartyModel.CurrentArchersTactic == ArchersTactics.Skirmish && defender.PartyModel.HasInfantry)
+                {
+                    // attacker is infantry, and the defender is an archer in skirmish tactic and his party still has infantry to cower behind.
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -90,7 +93,7 @@ namespace AdvancedAutoResolve.Simulation.Models
             return modifier;
         }
 
-        internal float GetExtraAttackingPowerFromLeaderPerks(TroopModel defender)
+        internal float GetExtraAttackingPowerFromLeaderPerks(Troop defender)
         {
             float modifier = 1f;
             if (PartyModel.HasLeader)

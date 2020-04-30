@@ -1,17 +1,15 @@
 ﻿using AdvancedAutoResolve.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.ObjectSystem;
 
-namespace AdvancedAutoResolve.Simulation.Models
+namespace AdvancedAutoResolve.Models
 {
-    internal class PartyModel
+    internal class Party
     {
-
         internal bool HasLeader { get; }
 
         //TODO Change this or add separately all Heros from parties to give exta bonuses to troops from perks
@@ -21,15 +19,15 @@ namespace AdvancedAutoResolve.Simulation.Models
         internal CavalryTactics CurrentCavalryTactic { get; private set; } = CavalryTactics.NoTactic;
         internal HorseArchersTactics CurrentHorseArchersTactic { get; private set; } = HorseArchersTactics.NoTactic;
 
-        internal List<TroopModel> Troops { get; }
+        internal List<Troop> Troops { get; }
 
-        private bool HasInfantry => Troops.Any(t => t.TroopType == TroopType.Infantry);
-        private bool HasArchers => Troops.Any(t => t.TroopType == TroopType.Archer);
-        private bool HasCavalry => Troops.Any(t => t.TroopType == TroopType.Cavalry);
-        private bool HasHorseArchers => Troops.Any(t => t.TroopType == TroopType.HorseArcher);
+        internal bool HasInfantry => Troops.Any(t => t.TroopType == TroopType.Infantry);
+        internal bool HasArchers => Troops.Any(t => t.TroopType == TroopType.Archer);
+        internal bool HasCavalry => Troops.Any(t => t.TroopType == TroopType.Cavalry);
+        internal bool HasHorseArchers => Troops.Any(t => t.TroopType == TroopType.HorseArcher);
 
 
-        internal PartyModel(PartyBase party)
+        internal Party(PartyBase party)
         {
             HasLeader = party.LeaderHero != null && party.LeaderHero.HitPoints > 20; // leader hero is present and not wounded
             if (HasLeader)
@@ -42,7 +40,7 @@ namespace AdvancedAutoResolve.Simulation.Models
                     party.LeaderHero.GetPerkValue(DefaultPerks.Tactics.Phalanx));
             }
 
-            Troops = new List<TroopModel>();
+            Troops = new List<Troop>();
 
             AddTroopsFromParty(party);
 
@@ -64,7 +62,7 @@ namespace AdvancedAutoResolve.Simulation.Models
 
                 while (totalNumber-- > 0)
                 {
-                    Troops.Add(new TroopModel(troop.Character, this, troopType));
+                    Troops.Add(new Troop(troop.Character, this, troopType));
                 }
             }
             if(party.MobileParty.AttachedParties != null)

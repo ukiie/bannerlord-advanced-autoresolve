@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdvancedAutoResolve.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace AdvancedAutoResolve.Simulation.Models
     {
         internal MBGUID BattleId { get; }
 
-        private ReadOnlyCollection<PartyModel> Parties { get; }
+        private ReadOnlyCollection<Party> Parties { get; }
 
         internal string EventDescription { get; }
 
@@ -24,7 +25,7 @@ namespace AdvancedAutoResolve.Simulation.Models
         {
             BattleId = mapEvent.Id;
             EventDescription = mapEvent.ToString();
-            Parties = new ReadOnlyCollection<PartyModel>(new List<PartyModel> { new PartyModel(defenderParty), new PartyModel(attackerParty) }); // do not change the order of the list
+            Parties = new ReadOnlyCollection<Party>(new List<Party> { new Party(defenderParty), new Party(attackerParty) }); // do not change the order of the list
             IsPlayerInvolved = Hero.MainHero.Id == attackerParty.LeaderHero?.Id || Hero.MainHero.Id == defenderParty.LeaderHero?.Id;
         }
 
@@ -86,7 +87,7 @@ namespace AdvancedAutoResolve.Simulation.Models
             Parties[(int)side].SelectNewTactics();
         }
 
-        private TroopModel GetTroop(MBGUID troopId)
+        private Troop GetTroop(MBGUID troopId)
         {
             foreach (var party in Parties)
             {

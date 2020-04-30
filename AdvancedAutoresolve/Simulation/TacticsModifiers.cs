@@ -1,4 +1,5 @@
-﻿using AdvancedAutoResolve.Simulation.Models;
+﻿using AdvancedAutoResolve.Models;
+using AdvancedAutoResolve.Simulation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
