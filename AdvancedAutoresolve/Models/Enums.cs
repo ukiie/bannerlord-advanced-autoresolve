@@ -13,10 +13,10 @@
 
     internal enum SimulationTroopState
     {
-        Alive,
-        Wounded,
-        Killed,
-        Routed
+        Alive = 0,
+        Wounded = 1,
+        Kille = 2,
+        Routed = 3
     }
 
     internal enum InfantryTactics

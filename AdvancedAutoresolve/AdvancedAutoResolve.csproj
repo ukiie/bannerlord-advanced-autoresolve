@@ -212,7 +212,9 @@
     <Compile Include="HarmonyPatches\BattleSimulationPatches\TroopsNumberChanged.cs" />
     <Compile Include="HarmonyPatches\DefaultCombatSimulationModelPatches\SimulateHit.cs" />
     <Compile Include="HarmonyPatches\MapEventPatches\AddInvolvedParty.cs" />
-    <Compile Include="HarmonyPatches\MapEventPatches\SimulateBattleForRound.cs" />
+    <Compile Include="HarmonyPatches\MapEventSidePatches\ApplySimulationDamageToSelectedTroop.cs" />
+    <Compile Include="HarmonyPatches\MapEventSidePatches\MapEventSideAccessTools.cs" />
+    <Compile Include="HarmonyPatches\MapEventSidePatches\MapEventSideReversePatches.cs" />
     <Compile Include="Helpers\EnumExtensions.cs" />
     <Compile Include="Helpers\MapEventExtensions.cs" />
     <Compile Include="Helpers\MessageHelper.cs" />

@@ -13,7 +13,7 @@
 
         internal static Modifiers GetDefaultModifiers()
         {
-            return new Modifiers(0.7f, 0.7f);
+            return new Modifiers(0.75f, 0.75f);
         }
 
     }

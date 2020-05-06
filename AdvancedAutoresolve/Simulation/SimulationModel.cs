@@ -1,3 +1,4 @@
+﻿using AdvancedAutoResolve.Helpers;
 using AdvancedAutoResolve.Models;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.ObjectSystem;
+using static TaleWorlds.CampaignSystem.MapEvent;
 
 namespace AdvancedAutoResolve.Simulation.Models
 {
@@ -15,7 +17,7 @@ namespace AdvancedAutoResolve.Simulation.Models
     {
         internal MBGUID BattleId { get; }
 
-        private ReadOnlyCollection<Party> Parties { get; }
+        internal ReadOnlyCollection<Party> Parties { get; }
 
         internal string EventDescription { get; }
 
@@ -50,8 +52,8 @@ namespace AdvancedAutoResolve.Simulation.Models
             var defenderLeaderDefenseModifier = defender.GetDefenseModifierFromLeader();
 
             bool makesSenseToAttackThisUnit = attacker.DoesItMakeSenseToAttackThisUnit(defender);
-            //if it doesn't make sense to attack current defender, reduce damage by 70%
-            var makesSenseToAttackUnitModifier = makesSenseToAttackThisUnit ? 1f : 0.3f; 
+            //if it doesn't make sense to attack current defender, reduce damage by 90%
+            var makesSenseToAttackUnitModifier = makesSenseToAttackThisUnit ? 1f : 0.1f;
 
             var finalAttackerPower = attackerPower * attackerTacticModifiers.AttackBonus * attackerExtraPowerFromLeaderPerks * attackerLeaderAttackModifier * makesSenseToAttackUnitModifier;
             var finalDefenderPower = defenderPower * defenderTacticModifiers.DefenseBonus * defenderLeaderDefenseModifier;
