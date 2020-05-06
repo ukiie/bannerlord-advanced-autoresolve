@@ -146,6 +146,50 @@ namespace AdvancedAutoResolve.Models
         {
             if (!HasLeader)
             {
+                var item = troop.Equipment[(EquipmentIndex)i];
+                if (!item.IsEmpty)
+                {
+                    if (item.Item.Type == ItemObject.ItemTypeEnum.Shield)
+                        hasShield = true;
+                    if (item.Item.Type == ItemObject.ItemTypeEnum.Thrown)
+                        hasThrowables = true;
+                    if (item.Item.Type == ItemObject.ItemTypeEnum.Crossbow || item.Item.Type == ItemObject.ItemTypeEnum.Bow)
+                        hasRanged = true;
+                }
+            }
+            var sumOfAllArmor = troop.GetArmArmorSum() + troop.GetBodyArmorSum() + troop.GetHeadArmorSum() + troop.GetLegArmorSum();
+            var horseArmor = troop.GetHorseArmorSum();
+
+            var type = TroopType.ShockInfantry;
+
+            if (hasRanged && !troop.IsMounted)
+                return TroopType.Ranged;
+
+            if (hasRanged && troop.IsMounted)
+                return TroopType.HorseArcher;
+
+            if (!hasRanged && !troop.IsMounted && hasThrowables && !hasShield && sumOfAllArmor < 75)
+                return TroopType.SkirmishInfantry;
+
+            if (!hasRanged && !troop.IsMounted && !hasShield)
+                return TroopType.ShockInfantry;
+
+            if(!hasRanged && !troop.IsMounted && hasShield)
+                return TroopType.HeavyInfantry;
+
+            if (!hasRanged && troop.IsMounted && (sumOfAllArmor > 75 || horseArmor > 40))
+                return TroopType.HeavyCavalry;
+
+            if (!hasRanged && troop.IsMounted && (sumOfAllArmor < 75 || horseArmor < 40))
+                return TroopType.LightCavalry;
+
+            return type;
+        }
+
+        private void SelectBattlesTactics()
+        {
+            if (!HasLeader)
+            {
                 return;
             }
 
@@ -153,70 +197,6 @@ namespace AdvancedAutoResolve.Models
             RollNewArchersTactic();
             RollNewCavalryTactic();
             RollNewHorseArchersTactic();
-        }
-
-        internal void SelectNewTactics()
-        {
-            if (!HasLeader)
-            {
-                return;
-            }
-
-            int totalNumberOfFormations = GetTotalNumberOfFormations();
-            if (totalNumberOfFormations < 1)
-                return;
-
-            int numberOfFormationsThatWillSwitchTactics = SubModule.Random.Next(1, totalNumberOfFormations);
-
-            bool changedInfTactic = false;
-            bool changedArchTactic = false;
-            bool changedCavTactic = false;
-            bool changedHATactic = false;
-
-            while (numberOfFormationsThatWillSwitchTactics > 0)
-            {
-                int formationIndex = SubModule.Random.Next(1, 4);
-                formationIndex = ChangeFormationIndexIfFormationIsEmpty(formationIndex);
-
-                if (!changedInfTactic && formationIndex == (int)TroopType.Infantry && HasInfantry)
-                {
-                    RollNewInfantryTactic();
-                    changedInfTactic = true;
-                    numberOfFormationsThatWillSwitchTactics--;
-                }
-                if (!changedArchTactic && formationIndex == (int)TroopType.Archer && HasArchers)
-                {
-                    RollNewArchersTactic();
-                    changedArchTactic = true;
-                    numberOfFormationsThatWillSwitchTactics--;
-                }
-                if (!changedCavTactic && formationIndex == (int)TroopType.Cavalry && HasCavalry)
-                {
-                    RollNewCavalryTactic();
-                    changedCavTactic = true;
-                    numberOfFormationsThatWillSwitchTactics--;
-                }
-                if (!changedHATactic && formationIndex == (int)TroopType.HorseArcher && HasHorseArchers)
-                {
-                    RollNewHorseArchersTactic();
-                    changedHATactic = true;
-                    numberOfFormationsThatWillSwitchTactics--;
-                }
-            }
-        }
-
-        private int ChangeFormationIndexIfFormationIsEmpty(int currentIndex)
-        {
-            if (currentIndex == (int)TroopType.Infantry && !HasInfantry)
-                currentIndex += 1;
-            if (currentIndex == (int)TroopType.Archer && !HasArchers)
-                currentIndex += 1;
-            if (currentIndex == (int)TroopType.Cavalry && !HasCavalry)
-                currentIndex += 1;
-            if (currentIndex == (int)TroopType.HorseArcher && !HasHorseArchers)
-                currentIndex = 1;
-
-            return currentIndex;
         }
 
         private void RollNewInfantryTactic()
