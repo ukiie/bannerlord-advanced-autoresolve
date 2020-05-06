@@ -1,31 +1,34 @@
 ﻿using AdvancedAutoResolve.Simulation;
 using System;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
 
 namespace AdvancedAutoResolve.Models
 {
     internal class Troop
     {
-        internal Troop(CharacterObject characterObject, Party partyModel, TroopType troopType)
+        internal Troop(CharacterObject characterObject, Party partyModel, TroopType troopType, TroopType testTroopType)
         {
             CharacterObject = characterObject;
             PartyModel = partyModel;
             TroopType = troopType;
+            TestTroopType = testTroopType;
         }
 
         internal CharacterObject CharacterObject { get; }
         internal Party PartyModel { get; }
         internal TroopType TroopType { get; }
+        internal TroopType TestTroopType { get; }
 
         internal Modifiers GetModifiersFromTactics()
         {
             switch (TroopType)
             {
-                case TroopType.Infantry:
+                case TroopType.HeavyInfantry:
                     return TacticsModifiers.GetModifiersFromInfantryTactic(PartyModel.CurrentInfantryTactic);
-                case TroopType.Archer:
+                case TroopType.Ranged:
                     return TacticsModifiers.GetModifiersFromArcherTactic(PartyModel.CurrentArchersTactic);
-                case TroopType.Cavalry:
+                case TroopType.LightCavalry:
                     return TacticsModifiers.GetModifiersFromCavalryTactic(PartyModel.CurrentCavalryTactic);
                 case TroopType.HorseArcher:
                     return TacticsModifiers.GetModifiersFromHorseArcherTactic(PartyModel.CurrentHorseArchersTactic);
@@ -66,9 +69,9 @@ namespace AdvancedAutoResolve.Models
         /// </summary>
         internal bool DoesItMakeSenseToAttackThisUnit(Troop defender)
         {
-            if (TroopType == TroopType.Infantry)
+            if (TroopType == TroopType.HeavyInfantry)
             {
-                if (defender.TroopType == TroopType.Archer && defender.PartyModel.CurrentArchersTactic == ArchersTactics.Skirmish && defender.PartyModel.HasInfantry)
+                if (defender.TroopType == TroopType.Ranged && defender.PartyModel.CurrentArchersTactic == RangedTactics.SkirmishBehindInfantry && defender.PartyModel.HasInfantry)
                 {
                     // attacker is infantry, and the defender is an archer in skirmish tactic and his party still has infantry to cower behind.
                     return false;
@@ -105,16 +108,23 @@ namespace AdvancedAutoResolve.Models
                 if (PartyModel.PartyLeader.HasHammerAndAnvilPerk)
                 {
                     //TODO Can HA use this perk as well??
-                    if (TroopType == TroopType.Cavalry && defender.TroopType == TroopType.Archer)
+                    if (TroopType == TroopType.LightCavalry && defender.TroopType == TroopType.Ranged)
                     {
                         modifier += 0.5f;
                     }
                 }
                 if (PartyModel.PartyLeader.HasPhalanxPerk)
                 {
-                    if (TroopType == TroopType.Infantry && defender.TroopType == TroopType.Cavalry || defender.TroopType == TroopType.HorseArcher)
+                    if (TroopType == TroopType.HeavyInfantry && defender.TroopType == TroopType.LightCavalry || defender.TroopType == TroopType.HorseArcher)
                     {
                         modifier += 0.5f;
+                    }
+                }
+                if (PartyModel.PartyLeader.HasAmbushSpecialistPerk && PartyModel.TerrainType == TerrainType.Forest)
+                {
+                    if (TroopType == TroopType.Ranged)
+                    {
+                        modifier += 0.6f;
                     }
                 }
             }
