@@ -17,6 +17,7 @@ namespace AdvancedAutoResolve
             Harmony harmony = new Harmony("com.ukie.advanced-autoresolve");
             harmony.PatchAll(typeof(SubModule).Assembly);
             Random = new Random();
+            Config.InitializeConfig();
         }
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()

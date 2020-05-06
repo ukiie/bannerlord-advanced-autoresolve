@@ -1,4 +1,5 @@
-﻿using AdvancedAutoResolve.Simulation;
+﻿using AdvancedAutoResolve.Helpers;
+using AdvancedAutoResolve.Simulation;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,11 @@ namespace AdvancedAutoResolve.HarmonyPatches.MapEventPatches
             if(SimulationsPool.TryGetSimulationModel(__instance.Id, out var simulationModel) && notFromInit)
             {
                 simulationModel.AddTroopsFromInvolvedParty(involvedParty, side);
+
+                if (Config.CurrentConfig.ShouldLogThis(simulationModel.IsPlayerInvolved))
+                {
+                    MessageHelper.DisplayText($"Player joined {simulationModel.EventDescription}", DisplayTextStyle.Info);
+                }
             }
         }
     }

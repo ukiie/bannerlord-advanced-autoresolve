@@ -21,11 +21,12 @@ namespace AdvancedAutoResolve
 
         private void Finalize(MapEvent battle)
         {
-            if (SubModule.IsValidEventType(battle.EventType) && SimulationsPool.TryRemoveSimulationModel(battle.Id, out var model))
+            if (SubModule.IsValidEventType(battle.EventType) && SimulationsPool.TryRemoveSimulationModel(battle.Id, out var simulationModel))
             {
-                if (model.IsPlayerInvolved)
+
+                if (Config.CurrentConfig.ShouldLogThis(simulationModel.IsPlayerInvolved))
                 {
-                    MessageHelper.DisplayText($"Finished {model.EventDescription}", DisplayTextStyle.Info);
+                    MessageHelper.DisplayText($"Finished {simulationModel.EventDescription}", DisplayTextStyle.Info);
                 }
             }
         }
@@ -34,16 +35,21 @@ namespace AdvancedAutoResolve
         {
             if (SubModule.IsValidEventType(battle.EventType))
             {
-                var model = new SimulationModel(battle, attackerParty, defenderParty);
-                SimulationsPool.AddModelToSimulations(model);
-                if (model.IsPlayerInvolved)
+                var simulationModel = new SimulationModel(battle, attackerParty, defenderParty);
+                if (SimulationsPool.AddModelToSimulations(simulationModel))
                 {
-                    MessageHelper.DisplayText($"Initialized {model.EventDescription}", DisplayTextStyle.Info);
-                }
-                else
-                {
-                    // battle observer for battles started by AI
-                    battle.AddSimulationObserver();
+                    if (simulationModel.IsPlayerInvolved)
+                    {
+                        if (Config.CurrentConfig.ShouldLogThis(simulationModel.IsPlayerInvolved))
+                        {
+                            MessageHelper.DisplayText($"Initialized {simulationModel.EventDescription}", DisplayTextStyle.Info);
+                        }
+                    }
+                    else
+                    {
+                        // battle observer for battles started by AI
+                        battle.AddSimulationObserver();
+                    }
                 }
             }
         }

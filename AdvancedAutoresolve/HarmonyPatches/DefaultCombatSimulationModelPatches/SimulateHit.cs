@@ -15,7 +15,7 @@ namespace AdvancedAutoResolve.HarmonyPatches.DefaultCombatSimulationModelPatches
     [HarmonyPatch(typeof(DefaultCombatSimulationModel), nameof(DefaultCombatSimulationModel.SimulateHit))]
     internal static class SimulateHit
     {
-        private static bool Prefix(ref int __result, ref DefaultCombatSimulationModel __instance, CharacterObject strikerTroop, CharacterObject strikedTroop, PartyBase strikerParty, PartyBase strikedParty, float strikerAdvantage, MapEvent battle)
+        private static bool Prefix(ref int __result, CharacterObject strikerTroop, CharacterObject strikedTroop, PartyBase strikerParty, PartyBase strikedParty, float strikerAdvantage, MapEvent battle)
         {
             if (SimulationsPool.TryGetSimulationModel(battle.Id, out SimulationModel simulationModel))
             {
@@ -26,9 +26,11 @@ namespace AdvancedAutoResolve.HarmonyPatches.DefaultCombatSimulationModelPatches
                 }
                 catch (Exception ex)
                 {
-#if DEBUG
-                    MessageHelper.DisplayText($"{simulationModel.EventDescription} Critical error simulating hit: " + ex.Message, DisplayTextStyle.Warning);
-#endif
+                    if (Config.CurrentConfig.ShouldLogThis(simulationModel.IsPlayerInvolved))
+                    {
+                        MessageHelper.DisplayText($"{simulationModel.EventDescription} Critical error simulating hit: " + ex.Message, DisplayTextStyle.Warning);
+                    }
+
                     return true;
                 }
             }
