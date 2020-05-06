@@ -10,21 +10,24 @@ namespace AdvancedAutoResolve.Simulation
     {
         private readonly static ConcurrentDictionary<MBGUID, SimulationModel> pool = new ConcurrentDictionary<MBGUID, SimulationModel>();
 
-        internal static void AddModelToSimulations(SimulationModel simulationModel)
+        internal static bool AddModelToSimulations(SimulationModel simulationModel)
         {
-            if (!pool.TryAdd(simulationModel.BattleId, simulationModel))
+            bool added = pool.TryAdd(simulationModel.BattleId, simulationModel);
+            if (!added)
             {
-#if DEBUG
-                if (pool.TryGetValue(simulationModel.BattleId, out var existingModel))
+                if (Config.CurrentConfig.ShouldLogThis(simulationModel.IsPlayerInvolved))
                 {
-                    MessageHelper.DisplayText($"{existingModel.BattleId} Already added", DisplayTextStyle.Warning);
+                    if (pool.TryGetValue(simulationModel.BattleId, out _))
+                    {
+                        MessageHelper.DisplayText($"{simulationModel.EventDescription} Already added.", DisplayTextStyle.Warning);
+                    }
+                    else
+                    {
+                        MessageHelper.DisplayText($"{simulationModel.EventDescription} Could not add a battle to advanced simulation! Will use default simulation instead", DisplayTextStyle.Warning);
+                    }
                 }
-                else
-                {
-                    MessageHelper.DisplayText($"{simulationModel.BattleId} Could not add a battle to advanced simulation! Will use default simulation instead", DisplayTextStyle.Warning);
-                }
-#endif
             }
+            return added;
         }
 
         internal static bool TryGetSimulationModel(MBGUID battleId, out SimulationModel simulationModel)
