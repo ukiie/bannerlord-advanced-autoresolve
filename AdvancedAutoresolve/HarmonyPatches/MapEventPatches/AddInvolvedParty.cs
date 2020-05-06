@@ -22,7 +22,7 @@ namespace AdvancedAutoResolve.HarmonyPatches.MapEventPatches
 
                 if (Config.CurrentConfig.ShouldLogThis(simulationModel.IsPlayerInvolved))
                 {
-                    MessageHelper.DisplayText($"Player joined {simulationModel.EventDescription}", DisplayTextStyle.Info);
+                    MessageHelper.DisplayText($"{involvedParty} joined {simulationModel.EventDescription}", DisplayTextStyle.Info);
                 }
             }
         }

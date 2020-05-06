@@ -1,4 +1,4 @@
-﻿using AdvancedAutoResolve.Models;
+using AdvancedAutoResolve.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -96,6 +96,26 @@ namespace AdvancedAutoResolve.Simulation.Models
             }
 
             throw new Exception($"Could not find troop with Id {troopId}");
+        }
+
+        internal static bool IsValidEventType(BattleTypes battleType)
+        {
+            switch (battleType)
+            {
+                // normal battle
+                case BattleTypes.FieldBattle:
+                // village battles
+                case BattleTypes.Raid:
+                case BattleTypes.IsForcingSupplies:
+                case BattleTypes.IsForcingVolunteers:
+                // castle/town battles
+                case BattleTypes.Siege:
+                case BattleTypes.SiegeOutside:
+                case BattleTypes.SallyOut:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }
