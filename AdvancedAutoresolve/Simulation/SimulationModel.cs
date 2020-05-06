@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
+using static TaleWorlds.CampaignSystem.MapEvent;
 
 namespace AdvancedAutoResolve.Simulation.Models
 {
