@@ -25,11 +25,11 @@ namespace AdvancedAutoResolve.Simulation
             }
         }
 
-        internal static Modifiers GetModifiersFromArcherTactic(ArchersTactics tactic)
+        internal static Modifiers GetModifiersFromArcherTactic(RangedTactics tactic)
         {
             switch (tactic)
             {
-                case ArchersTactics.Skirmish:
+                case RangedTactics.SkirmishBehindInfantry:
                     return new Modifiers(1.2f, 1.4f);
                 default:
                     return Modifiers.GetDefaultModifiers();

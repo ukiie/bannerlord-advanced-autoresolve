@@ -2,10 +2,13 @@
 {
     internal enum TroopType
     {
-        Infantry = 1,
-        Archer = 2,
-        Cavalry = 3,
-        HorseArcher = 4
+        ShockInfantry = 1,
+        SkirmishInfantry = 2,
+        HeavyInfantry = 3,
+        Ranged = 4,
+        LightCavalry = 5,
+        HeavyCavalry = 6,
+        HorseArcher = 7
     }
 
     internal enum SimulationTroopState
@@ -24,11 +27,11 @@
         ShieldWall = 3,
     }
 
-    internal enum ArchersTactics
+    internal enum RangedTactics
     {
         NoTactic = 0,
         Charge = 1,
-        Skirmish = 2,
+        SkirmishBehindInfantry = 2,
     }
 
     internal enum CavalryTactics

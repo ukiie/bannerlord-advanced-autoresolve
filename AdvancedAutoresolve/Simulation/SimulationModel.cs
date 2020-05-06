@@ -30,8 +30,12 @@ namespace AdvancedAutoResolve.Simulation.Models
 
         internal int SimulateHit(MBGUID strikerTroopId, MBGUID strikedTroopId, float strikerAdvantage)
         {
+
             var attacker = GetTroop(strikerTroopId);
             var defender = GetTroop(strikedTroopId);
+
+            //var attackersGrouped = attacker.PartyModel.Troops.GroupBy(t => t.TestTroopType).ToList();
+            //var defendersGrouped = defender.PartyModel.Troops.GroupBy(t => t.TestTroopType).ToList();
 
             var troopNumbersAdvantage = CalculateNumbersAdvantage(attacker.PartyModel.Troops.Count, defender.PartyModel.Troops.Count);
 
@@ -63,8 +67,8 @@ namespace AdvancedAutoResolve.Simulation.Models
         private float CalculateNumbersAdvantage(int attackersCount, int defendersCount)
         {
             var advantage = (float)((float)attackersCount / (float)defendersCount);
-            if (advantage > 1.5f) return 1.5f;
-            if (advantage < 0.4f) return 0.4f;
+            if (advantage > 1.2f) return 1.2f;
+            if (advantage < 0.8f) return 0.8f;
             return advantage;
         }
 
@@ -79,11 +83,6 @@ namespace AdvancedAutoResolve.Simulation.Models
         internal void RemoveTroop(BattleSideEnum side, MBGUID troopId)
         {
             Parties[(int)side].RemoveTroop(troopId);
-        }
-
-        internal void ChangeTactics(BattleSideEnum side)
-        {
-            Parties[(int)side].SelectNewTactics();
         }
 
         private Troop GetTroop(MBGUID troopId)

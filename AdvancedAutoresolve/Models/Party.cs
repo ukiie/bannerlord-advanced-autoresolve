@@ -11,23 +11,26 @@ namespace AdvancedAutoResolve.Models
     {
         internal bool HasLeader { get; }
 
+        internal TerrainType TerrainType { get; }
+
         //TODO Change this or add separately all Heros from parties to give exta bonuses to troops from perks
         internal PartyLeader PartyLeader { get; }
         internal InfantryTactics CurrentInfantryTactic { get; private set; } = InfantryTactics.NoTactic;
-        internal ArchersTactics CurrentArchersTactic { get; private set; } = ArchersTactics.NoTactic;
+        internal RangedTactics CurrentArchersTactic { get; private set; } = RangedTactics.NoTactic;
         internal CavalryTactics CurrentCavalryTactic { get; private set; } = CavalryTactics.NoTactic;
         internal HorseArchersTactics CurrentHorseArchersTactic { get; private set; } = HorseArchersTactics.NoTactic;
 
         internal List<Troop> Troops { get; }
 
-        internal bool HasInfantry => Troops.Any(t => t.TroopType == TroopType.Infantry);
-        internal bool HasArchers => Troops.Any(t => t.TroopType == TroopType.Archer);
-        internal bool HasCavalry => Troops.Any(t => t.TroopType == TroopType.Cavalry);
-        internal bool HasHorseArchers => Troops.Any(t => t.TroopType == TroopType.HorseArcher);
+        internal bool HasInfantry => Troops.Any(t => TroopTypeExtensions.IsInfantryTroopType((int)t.TroopType));
+        internal bool HasArchers => Troops.Any(t => TroopTypeExtensions.IsRangedTroopType((int)t.TroopType));
+        internal bool HasCavalry => Troops.Any(t => TroopTypeExtensions.IsCavalryTroopType((int)t.TroopType));
+        internal bool HasHorseArchers => Troops.Any(t => TroopTypeExtensions.IsHorseArcherTroopType((int)t.TroopType));
 
 
         internal Party(PartyBase party)
         {
+            TerrainType = Campaign.Current.MapSceneWrapper.GetTerrainTypeAtPosition(party.MapEvent.Position);
             HasLeader = party.LeaderHero != null && party.LeaderHero.HitPoints > 20; // leader hero is present and not wounded
             if (HasLeader)
             {
@@ -36,14 +39,15 @@ namespace AdvancedAutoResolve.Models
                     party.LeaderHero.GetSkillValue(DefaultSkills.Tactics),
                     party.LeaderHero.GetPerkValue(DefaultPerks.Tactics.TacticalSuperiority),
                     party.LeaderHero.GetPerkValue(DefaultPerks.Tactics.HammerAndAnvil),
-                    party.LeaderHero.GetPerkValue(DefaultPerks.Tactics.Phalanx));
+                    party.LeaderHero.GetPerkValue(DefaultPerks.Tactics.Phalanx),
+                    party.LeaderHero.GetPerkValue(DefaultPerks.Tactics.AmbushSpecialist));
             }
 
             Troops = new List<Troop>();
 
             AddTroopsFromParty(party);
 
-            SelectInitialTactics();
+            SelectBattlesTactics();
         }
 
         internal void RemoveTroop(MBGUID troopId)
@@ -58,15 +62,16 @@ namespace AdvancedAutoResolve.Models
             {
                 int totalNumber = troop.Number - troop.WoundedNumber;
                 var troopType = DecideTroopType(troop.Character);
+                var testTroopType = DecideTroopTypeTest(troop.Character);
 
                 while (totalNumber-- > 0)
                 {
-                    Troops.Add(new Troop(troop.Character, this, troopType));
+                    Troops.Add(new Troop(troop.Character, this, troopType, testTroopType));
                 }
             }
-            if(party.MobileParty.AttachedParties != null)
+            if (party.MobileParty.AttachedParties != null)
             {
-                foreach(var attachedParty in party.MobileParty.AttachedParties)
+                foreach (var attachedParty in party.MobileParty.AttachedParties)
                 {
                     AddTroopsFromParty(attachedParty.Party);
                 }
@@ -75,34 +80,68 @@ namespace AdvancedAutoResolve.Models
 
         private TroopType DecideTroopType(CharacterObject troop)
         {
+            var type = TroopType.HeavyInfantry;
             if (troop.CurrentFormationClass == FormationClass.Infantry)
-                return TroopType.Infantry;
+                type = TroopType.HeavyInfantry;
             if (troop.CurrentFormationClass == FormationClass.Ranged)
-                return TroopType.Archer;
+                type = TroopType.Ranged;
             if (troop.CurrentFormationClass == FormationClass.Cavalry)
-                return TroopType.Cavalry;
+                type = TroopType.LightCavalry;
             if (troop.CurrentFormationClass == FormationClass.HorseArcher)
+                type = TroopType.HorseArcher;
+
+            return type;
+        }
+
+        private TroopType DecideTroopTypeTest(CharacterObject troop)
+        {
+            bool hasThrowables = false;
+            bool hasRanged = false;
+            bool hasShield = false;
+
+            for (int i = 0; i < 4; i++)
+            {
+                var item = troop.Equipment[(EquipmentIndex)i];
+                if (!item.IsEmpty)
+                {
+                    if (item.Item.Type == ItemObject.ItemTypeEnum.Shield)
+                        hasShield = true;
+                    if (item.Item.Type == ItemObject.ItemTypeEnum.Thrown)
+                        hasThrowables = true;
+                    if (item.Item.Type == ItemObject.ItemTypeEnum.Crossbow || item.Item.Type == ItemObject.ItemTypeEnum.Bow)
+                        hasRanged = true;
+                }
+            }
+            var sumOfAllArmor = troop.GetArmArmorSum() + troop.GetBodyArmorSum() + troop.GetHeadArmorSum() + troop.GetLegArmorSum();
+            var horseArmor = troop.GetHorseArmorSum();
+
+            var type = TroopType.ShockInfantry;
+
+            if (hasRanged && !troop.IsMounted)
+                return TroopType.Ranged;
+
+            if (hasRanged && troop.IsMounted)
                 return TroopType.HorseArcher;
 
-            return TroopType.Infantry;
+            if (!hasRanged && !troop.IsMounted && hasThrowables && !hasShield && sumOfAllArmor < 75)
+                return TroopType.SkirmishInfantry;
+
+            if (!hasRanged && !troop.IsMounted && !hasShield)
+                return TroopType.ShockInfantry;
+
+            if(!hasRanged && !troop.IsMounted && hasShield)
+                return TroopType.HeavyInfantry;
+
+            if (!hasRanged && troop.IsMounted && (sumOfAllArmor > 75 || horseArmor > 40))
+                return TroopType.HeavyCavalry;
+
+            if (!hasRanged && troop.IsMounted && (sumOfAllArmor < 75 || horseArmor < 40))
+                return TroopType.LightCavalry;
+
+            return type;
         }
 
-        private int GetTotalNumberOfFormations()
-        {
-            int number = 0;
-            if (HasInfantry)
-                number++;
-            if (HasArchers)
-                number++;
-            if (HasCavalry)
-                number++;
-            if (HasHorseArchers)
-                number++;
-
-            return number;
-        }
-
-        private void SelectInitialTactics()
+        private void SelectBattlesTactics()
         {
             if (!HasLeader)
             {
@@ -115,70 +154,6 @@ namespace AdvancedAutoResolve.Models
             RollNewHorseArchersTactic();
         }
 
-        internal void SelectNewTactics()
-        {
-            if (!HasLeader)
-            {
-                return;
-            }
-
-            int totalNumberOfFormations = GetTotalNumberOfFormations();
-            if (totalNumberOfFormations < 1)
-                return;
-
-            int numberOfFormationsThatWillSwitchTactics = SubModule.Random.Next(1, totalNumberOfFormations);
-
-            bool changedInfTactic = false;
-            bool changedArchTactic = false;
-            bool changedCavTactic = false;
-            bool changedHATactic = false;
-
-            while (numberOfFormationsThatWillSwitchTactics > 0)
-            {
-                int formationIndex = SubModule.Random.Next(1, 4);
-                formationIndex = ChangeFormationIndexIfFormationIsEmpty(formationIndex);
-
-                if (!changedInfTactic && formationIndex == (int)TroopType.Infantry && HasInfantry)
-                {
-                    RollNewInfantryTactic();
-                    changedInfTactic = true;
-                    numberOfFormationsThatWillSwitchTactics--;
-                }
-                if (!changedArchTactic && formationIndex == (int)TroopType.Archer && HasArchers)
-                {
-                    RollNewArchersTactic();
-                    changedArchTactic = true;
-                    numberOfFormationsThatWillSwitchTactics--;
-                }
-                if (!changedCavTactic && formationIndex == (int)TroopType.Cavalry && HasCavalry)
-                {
-                    RollNewCavalryTactic();
-                    changedCavTactic = true;
-                    numberOfFormationsThatWillSwitchTactics--;
-                }
-                if (!changedHATactic && formationIndex == (int)TroopType.HorseArcher && HasHorseArchers)
-                {
-                    RollNewHorseArchersTactic();
-                    changedHATactic = true;
-                    numberOfFormationsThatWillSwitchTactics--;
-                }
-            }
-        }
-
-        private int ChangeFormationIndexIfFormationIsEmpty(int currentIndex)
-        {
-            if (currentIndex == (int)TroopType.Infantry && !HasInfantry)
-                currentIndex += 1;
-            if (currentIndex == (int)TroopType.Archer && !HasArchers)
-                currentIndex += 1;
-            if (currentIndex == (int)TroopType.Cavalry && !HasCavalry)
-                currentIndex += 1;
-            if (currentIndex == (int)TroopType.HorseArcher && !HasHorseArchers)
-                currentIndex = 1;
-
-            return currentIndex;
-        }
-
         private void RollNewInfantryTactic()
         {
             CurrentInfantryTactic = (InfantryTactics)SubModule.Random.Next(1, EnumExtensions.GetEnumCount<InfantryTactics>() - 1);
@@ -186,7 +161,7 @@ namespace AdvancedAutoResolve.Models
 
         private void RollNewArchersTactic()
         {
-            CurrentArchersTactic = (ArchersTactics)SubModule.Random.Next(1, EnumExtensions.GetEnumCount<ArchersTactics>() - 1);
+            CurrentArchersTactic = (RangedTactics)SubModule.Random.Next(1, EnumExtensions.GetEnumCount<RangedTactics>() - 1);
         }
 
         private void RollNewCavalryTactic()
