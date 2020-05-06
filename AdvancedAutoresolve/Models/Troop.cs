@@ -10,15 +10,29 @@ namespace AdvancedAutoResolve.Models
         internal Troop(CharacterObject characterObject, Party partyModel, TroopType troopType, TroopType testTroopType)
         {
             CharacterObject = characterObject;
+            Health = CharacterObject.MaxHitPoints();
             PartyModel = partyModel;
             TroopType = troopType;
             TestTroopType = testTroopType;
         }
 
+
         internal CharacterObject CharacterObject { get; }
+        internal int Health { get; set; }
         internal Party PartyModel { get; }
         internal TroopType TroopType { get; }
         internal TroopType TestTroopType { get; }
+
+        /// <summary>
+        /// Subtracts <paramref name="damage"/> amount from <see cref="Troop.Health"/>
+        /// </summary>
+        /// <param name="damage">damage amount</param>
+        /// <returns><c>true</c> if <see cref="Troop.Health"/> is 0 or below</returns>
+        internal bool ApplyDamage(int damage)
+        {
+            Health -= damage;
+            return Health <= 0;
+        }
 
         internal Modifiers GetModifiersFromTactics()
         {
@@ -130,6 +144,11 @@ namespace AdvancedAutoResolve.Models
             }
 
             return modifier;
+        }
+
+        public override string ToString()
+        {
+            return CharacterObject.ToString();
         }
     }
 }
