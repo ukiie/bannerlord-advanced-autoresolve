@@ -21,7 +21,7 @@ namespace AdvancedAutoResolve
 
         private void Finalize(MapEvent battle)
         {
-            if (SubModule.IsValidEventType(battle.EventType) && SimulationsPool.TryRemoveSimulationModel(battle.Id, out var simulationModel))
+            if (SimulationModel.IsValidEventType(battle.EventType) && SimulationsPool.TryRemoveSimulationModel(battle.Id, out var simulationModel))
             {
 
                 if (Config.CurrentConfig.ShouldLogThis(simulationModel.IsPlayerInvolved))
@@ -33,7 +33,7 @@ namespace AdvancedAutoResolve
 
         private void Initialize(MapEvent battle, PartyBase attackerParty, PartyBase defenderParty)
         {
-            if (SubModule.IsValidEventType(battle.EventType))
+            if (SimulationModel.IsValidEventType(battle.EventType))
             {
                 var simulationModel = new SimulationModel(battle, attackerParty, defenderParty);
                 if (SimulationsPool.AddModelToSimulations(simulationModel))

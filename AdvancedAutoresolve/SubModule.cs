@@ -25,11 +25,6 @@ namespace AdvancedAutoResolve
             InformationManager.DisplayMessage(new InformationMessage("Loaded AdvancedAutoresolve", new Color(0, 1, 0)));
         }
 
-        internal static bool IsValidEventType(BattleTypes battleType)
-        {
-            return battleType == BattleTypes.FieldBattle;
-        }
-
         public override void OnCampaignStart(Game game, object starterObject)
         {
             if (game.GameType is Campaign)

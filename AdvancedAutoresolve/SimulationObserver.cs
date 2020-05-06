@@ -29,7 +29,7 @@ namespace AdvancedAutoResolve
         {
             if (battleCombatant is PartyBase party)
             {
-                if (party.MapEvent != null && SubModule.IsValidEventType(party.MapEvent.EventType))
+                if (party.MapEvent != null && SimulationModel.IsValidEventType(party.MapEvent.EventType))
                 {
                     if (SimulationsPool.TryGetSimulationModel(party.MapEvent.Id, out SimulationModel simulationModel))
                     {
