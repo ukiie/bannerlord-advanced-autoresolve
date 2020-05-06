@@ -1,4 +1,5 @@
 ﻿using AdvancedAutoResolve.Helpers;
+using AdvancedAutoResolve.Simulation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,7 @@ namespace AdvancedAutoResolve.Models
                     Troops.Add(new Troop(troop.Character, this, troopType, testTroopType));
                 }
             }
-            if (party.MobileParty.AttachedParties != null)
+            if (party.MobileParty != null && party.MobileParty.AttachedParties != null)
             {
                 foreach (var attachedParty in party.MobileParty.AttachedParties)
                 {
