@@ -1,4 +1,5 @@
-﻿using AdvancedAutoResolve.Helpers;
+﻿using AdvancedAutoResolve.Configuration;
+using AdvancedAutoResolve.Helpers;
 using AdvancedAutoResolve.Models;
 using AdvancedAutoResolve.Simulation;
 using AdvancedAutoResolve.Simulation.Models;
@@ -55,11 +56,6 @@ namespace AdvancedAutoResolve.HarmonyPatches.MapEventSidePatches
                     // regular logic
                     else if(troop.ApplyDamage(damage))
                     {
-                        if (Config.CurrentConfig.ShouldLogThis(simulationModel.IsPlayerInvolved))
-                        {
-                            MessageHelper.DisplayText($"{troop} hit for {damage}. New Health: {troop.Health}", DisplayTextStyle.Info);
-                        }
-
                         PartyBase party = allocatedTroops[____selectedSimulationTroopDescriptor].Party;
                         float survivalChance = Campaign.Current.Models.PartyHealingModel.GetSurvivalChance(party, ____selectedSimulationTroop, damageType, strikerParty);
 

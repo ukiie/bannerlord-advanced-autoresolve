@@ -1,4 +1,5 @@
-﻿using AdvancedAutoResolve.Helpers;
+﻿using AdvancedAutoResolve.Configuration;
+using AdvancedAutoResolve.Helpers;
 using AdvancedAutoResolve.Simulation;
 using HarmonyLib;
 using System;

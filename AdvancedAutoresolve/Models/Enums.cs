@@ -2,6 +2,7 @@
 {
     internal enum TroopType
     {
+        Any = 0,
         ShockInfantry = 1,
         SkirmishInfantry = 2,
         HeavyInfantry = 3,

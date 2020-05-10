@@ -1,4 +1,5 @@
-﻿using AdvancedAutoResolve.Simulation;
+﻿using AdvancedAutoResolve.Configuration;
+using AdvancedAutoResolve.Simulation;
 using System;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -7,21 +8,18 @@ namespace AdvancedAutoResolve.Models
 {
     internal class Troop
     {
-        internal Troop(CharacterObject characterObject, Party partyModel, TroopType troopType, TroopType testTroopType)
+        internal Troop(CharacterObject characterObject, Party partyModel, TroopType troopType)
         {
             CharacterObject = characterObject;
             Health = CharacterObject.MaxHitPoints();
             PartyModel = partyModel;
             TroopType = troopType;
-            TestTroopType = testTroopType;
         }
-
 
         internal CharacterObject CharacterObject { get; }
         internal int Health { get; set; }
         internal Party PartyModel { get; }
         internal TroopType TroopType { get; }
-        internal TroopType TestTroopType { get; }
 
         /// <summary>
         /// Subtracts <paramref name="damage"/> amount from <see cref="Troop.Health"/>
@@ -38,14 +36,17 @@ namespace AdvancedAutoResolve.Models
         {
             switch (TroopType)
             {
+                case TroopType.ShockInfantry:
+                case TroopType.SkirmishInfantry:
                 case TroopType.HeavyInfantry:
-                    return TacticsModifiers.GetModifiersFromInfantryTactic(PartyModel.CurrentInfantryTactic);
+                    return PartyModel.CurrentInfantryTactic.Modifiers;
                 case TroopType.Ranged:
-                    return TacticsModifiers.GetModifiersFromArcherTactic(PartyModel.CurrentArchersTactic);
+                    return PartyModel.CurrentRangedTactic.Modifiers;
                 case TroopType.LightCavalry:
-                    return TacticsModifiers.GetModifiersFromCavalryTactic(PartyModel.CurrentCavalryTactic);
+                case TroopType.HeavyCavalry:
+                    return PartyModel.CurrentCavalryTactic.Modifiers;
                 case TroopType.HorseArcher:
-                    return TacticsModifiers.GetModifiersFromHorseArcherTactic(PartyModel.CurrentHorseArchersTactic);
+                    return PartyModel.CurrentHorseArchersTactic.Modifiers;
                 default:
                     throw new NotImplementedException($"Not supported TroopType {TroopType}");
             }
@@ -63,29 +64,15 @@ namespace AdvancedAutoResolve.Models
         }
 
         /// <summary>
-        /// 5% bonus per 100 levels of a skill
-        /// </summary>
-        internal float GetAttackModifierFromLeader()
-        {
-            float modifier = 1f;
-
-            if (PartyModel.HasLeader)
-            {
-                modifier += PartyModel.PartyLeader.TacticsLevel / 2000;
-                modifier += PartyModel.PartyLeader.LeadershipLevel / 2000;
-            }
-
-            return modifier;
-        }
-
-        /// <summary>
         /// Decide whether the defender would be attacked at this point in time, or not.
         /// </summary>
         internal bool DoesItMakeSenseToAttackThisUnit(Troop defender)
         {
             if (TroopType == TroopType.HeavyInfantry)
             {
-                if (defender.TroopType == TroopType.Ranged && defender.PartyModel.CurrentArchersTactic == RangedTactics.SkirmishBehindInfantry && defender.PartyModel.HasInfantry)
+                if (defender.TroopType == TroopType.Ranged
+                    && defender.PartyModel.CurrentRangedTactic == Config.CurrentConfig.Tactics.Find(t => t.Name == "SkirmishBehindInfantry")
+                    && defender.PartyModel.HasInfantry)
                 {
                     // attacker is infantry, and the defender is an archer in skirmish tactic and his party still has infantry to cower behind.
                     return false;
@@ -94,20 +81,35 @@ namespace AdvancedAutoResolve.Models
             return true;
         }
 
-        /// <summary>
-        /// 5% bonus per 100 levels of a skill
-        /// </summary>
         internal float GetDefenseModifierFromLeader()
         {
             float modifier = 1f;
 
             if (PartyModel.HasLeader)
             {
-                modifier += PartyModel.PartyLeader.TacticsLevel / 2000;
-                modifier += PartyModel.PartyLeader.LeadershipLevel / 2000;
+                modifier += PartyModel.PartyLeader.TacticsLevel * (Config.CurrentConfig.PartyLeaderModifiers.TacticsModifiers.DefenseBonus - 1f) / 100;
+                modifier += PartyModel.PartyLeader.LeadershipLevel * (Config.CurrentConfig.PartyLeaderModifiers.LeadershipModifiers.DefenseBonus - 1f) / 100;
             }
 
             return modifier;
+        }
+
+        internal float GetAttackModifierFromLeader()
+        {
+            float modifier = 1f;
+
+            if (PartyModel.HasLeader)
+            {
+                modifier += PartyModel.PartyLeader.TacticsLevel * (Config.CurrentConfig.PartyLeaderModifiers.TacticsModifiers.AttackBonus - 1f) / 100;
+                modifier += PartyModel.PartyLeader.LeadershipLevel * (Config.CurrentConfig.PartyLeaderModifiers.LeadershipModifiers.AttackBonus -1f) / 100;
+            }
+
+            return modifier;
+        }
+
+        internal Modifiers GetSiegeDefenderModifiers()
+        {
+            return PartyModel.IsSiegeDefender ? Config.CurrentConfig.SiegeDefendersModifiers : Modifiers.GetDefaultModifiers();
         }
 
         internal float GetExtraAttackingPowerFromLeaderPerks(Troop defender)

@@ -193,6 +193,9 @@
     <Reference Include="TaleWorlds.SaveSystem">
       <HintPath>$(BannerlordPath)\bin\Win64_Shipping_Client\TaleWorlds.SaveSystem.dll</HintPath>
     </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath>$(BannerlordPath)\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
+    </Reference>
     <Reference Include="TaleWorlds.Starter.DotNetCore">
       <HintPath>$(BannerlordPath)\bin\Win64_Shipping_Client\TaleWorlds.Starter.DotNetCore.dll</HintPath>
     </Reference>
@@ -208,17 +211,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedAutoResolveLogic.cs" />
-    <Compile Include="Config.cs" />
+    <Compile Include="Configuration\Config.cs" />
+    <Compile Include="Configuration\LoggingConfig.cs" />
+    <Compile Include="Configuration\NumbersAdvantageModifier.cs" />
+    <Compile Include="Configuration\PartyLeaderModifiers.cs" />
     <Compile Include="HarmonyPatches\BattleSimulationPatches\TroopsNumberChanged.cs" />
     <Compile Include="HarmonyPatches\DefaultCombatSimulationModelPatches\SimulateHit.cs" />
     <Compile Include="HarmonyPatches\MapEventPatches\AddInvolvedParty.cs" />
     <Compile Include="HarmonyPatches\MapEventSidePatches\ApplySimulationDamageToSelectedTroop.cs" />
     <Compile Include="HarmonyPatches\MapEventSidePatches\MapEventSideAccessTools.cs" />
     <Compile Include="HarmonyPatches\MapEventSidePatches\MapEventSideReversePatches.cs" />
+    <Compile Include="Helpers\CharacterObjectExtensions.cs" />
     <Compile Include="Helpers\EnumExtensions.cs" />
     <Compile Include="Helpers\MapEventExtensions.cs" />
     <Compile Include="Helpers\MessageHelper.cs" />
     <Compile Include="Helpers\TroopTypeExtensions.cs" />
+    <Compile Include="Models\Tactic.cs" />
     <Compile Include="SimulationObserver.cs" />
     <Compile Include="Models\Troop.cs" />
     <Compile Include="Simulation\SimulationsPool.cs" />

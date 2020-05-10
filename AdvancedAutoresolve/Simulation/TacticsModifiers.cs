@@ -21,7 +21,7 @@ namespace AdvancedAutoResolve.Simulation
                 case InfantryTactics.ShieldWall:
                     return new Modifiers(0.9f, 1.5f);
                 default:
-                    return Modifiers.GetDefaultModifiers();
+                    return Modifiers.GetNoTacticModifiers();
             }
         }
 
@@ -32,7 +32,7 @@ namespace AdvancedAutoResolve.Simulation
                 case RangedTactics.SkirmishBehindInfantry:
                     return new Modifiers(1.2f, 1.4f);
                 default:
-                    return Modifiers.GetDefaultModifiers();
+                    return Modifiers.GetNoTacticModifiers();
             }
         }
 
@@ -45,7 +45,7 @@ namespace AdvancedAutoResolve.Simulation
                 case CavalryTactics.Flank:
                     return new Modifiers(1.1f, 1.3f);
                 default:
-                    return Modifiers.GetDefaultModifiers();
+                    return Modifiers.GetNoTacticModifiers();
             }
         }
 
@@ -56,7 +56,7 @@ namespace AdvancedAutoResolve.Simulation
                 case HorseArchersTactics.Skirmish:
                     return new Modifiers(1.1f, 1.5f);
                 default:
-                    return Modifiers.GetDefaultModifiers();
+                    return Modifiers.GetNoTacticModifiers();
             }
         }
     }

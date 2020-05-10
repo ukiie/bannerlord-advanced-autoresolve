@@ -6,6 +6,7 @@ using HarmonyLib;
 using TaleWorlds.Library;
 using TaleWorlds.CampaignSystem;
 using static TaleWorlds.CampaignSystem.MapEvent;
+using AdvancedAutoResolve.Configuration;
 
 namespace AdvancedAutoResolve
 {

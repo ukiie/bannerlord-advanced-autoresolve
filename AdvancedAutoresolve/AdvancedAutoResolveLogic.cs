@@ -1,4 +1,5 @@
-﻿using AdvancedAutoResolve.Helpers;
+﻿using AdvancedAutoResolve.Configuration;
+using AdvancedAutoResolve.Helpers;
 using AdvancedAutoResolve.Simulation;
 using AdvancedAutoResolve.Simulation.Models;
 using System;
@@ -36,6 +37,10 @@ namespace AdvancedAutoResolve
             if (SimulationModel.IsValidEventType(battle.EventType))
             {
                 var simulationModel = new SimulationModel(battle, attackerParty, defenderParty);
+                
+                if (!simulationModel.IsPlayerInvolved && !Config.CurrentConfig.EnabledForAI)
+                    return;
+
                 if (SimulationsPool.AddModelToSimulations(simulationModel))
                 {
                     if (simulationModel.IsPlayerInvolved)

@@ -1,8 +1,10 @@
-﻿using AdvancedAutoResolve.Helpers;
+﻿using AdvancedAutoResolve.Configuration;
+using AdvancedAutoResolve.Helpers;
 using AdvancedAutoResolve.Simulation.Models;
 using System;
 using System.Collections.Concurrent;
 using TaleWorlds.Core;
+using TaleWorlds.ObjectSystem;
 
 namespace AdvancedAutoResolve.Simulation
 {

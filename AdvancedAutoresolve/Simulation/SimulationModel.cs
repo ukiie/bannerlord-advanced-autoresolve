@@ -1,4 +1,5 @@
-﻿using AdvancedAutoResolve.Helpers;
+﻿using AdvancedAutoResolve.Configuration;
+using AdvancedAutoResolve.Helpers;
 using AdvancedAutoResolve.Models;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,10 @@ namespace AdvancedAutoResolve.Simulation.Models
         {
             BattleId = mapEvent.Id;
             EventDescription = mapEvent.ToString();
-            Parties = new ReadOnlyCollection<Party>(new List<Party> { new Party(defenderParty), new Party(attackerParty) }); // do not change the order of the list
+
+            bool isSiegeBattle = mapEvent.EventType == BattleTypes.Siege;
+
+            Parties = new ReadOnlyCollection<Party>(new List<Party> { new Party(defenderParty, isSiegeBattle), new Party(attackerParty) }); // do not change the order of the list
             IsPlayerInvolved = Hero.MainHero.Id == attackerParty.LeaderHero?.Id || Hero.MainHero.Id == defenderParty.LeaderHero?.Id;
         }
 
@@ -44,34 +48,49 @@ namespace AdvancedAutoResolve.Simulation.Models
 
             var attackerPower = attacker.GetPower();
             var attackerTacticModifiers = attacker.GetModifiersFromTactics();
+            var attackerSiegeModifiers = attacker.GetSiegeDefenderModifiers();
             var attackerExtraPowerFromLeaderPerks = attacker.GetExtraAttackingPowerFromLeaderPerks(defender);
             var attackerLeaderAttackModifier = attacker.GetAttackModifierFromLeader();
 
             var defenderPower = defender.GetPower();
             var defenderTacticModifiers = defender.GetModifiersFromTactics();
+            var defenderSiegeModifiers = defender.GetSiegeDefenderModifiers();
             var defenderLeaderDefenseModifier = defender.GetDefenseModifierFromLeader();
 
             bool makesSenseToAttackThisUnit = attacker.DoesItMakeSenseToAttackThisUnit(defender);
             //if it doesn't make sense to attack current defender, reduce damage by 90%
             var makesSenseToAttackUnitModifier = makesSenseToAttackThisUnit ? 1f : 0.1f;
 
-            var finalAttackerPower = attackerPower * attackerTacticModifiers.AttackBonus * attackerExtraPowerFromLeaderPerks * attackerLeaderAttackModifier * makesSenseToAttackUnitModifier;
-            var finalDefenderPower = defenderPower * defenderTacticModifiers.DefenseBonus * defenderLeaderDefenseModifier;
+            var finalAttackerPower = attackerPower 
+                * attackerTacticModifiers.AttackBonus 
+                * attackerSiegeModifiers.AttackBonus 
+                * attackerExtraPowerFromLeaderPerks 
+                * attackerLeaderAttackModifier 
+                * makesSenseToAttackUnitModifier;
 
-            // 50f is from original calculation. Changed to 25, since new values are much higher
-            var damage = (int)(25f * (finalAttackerPower / finalDefenderPower) * strikerAdvantage * troopNumbersAdvantage);
+            var finalDefenderPower = defenderPower 
+                * defenderTacticModifiers.DefenseBonus 
+                * defenderSiegeModifiers.DefenseBonus 
+                * defenderLeaderDefenseModifier;
+
+            var damage = (int)(50f * (finalAttackerPower / finalDefenderPower) * strikerAdvantage * troopNumbersAdvantage);
 
             return damage;
         }
 
         /// <summary>
-        /// from -60% to 50% advantage from being outnumbered, or outnumbering the defender to be added to final damage.
+        /// 
         /// </summary>
         private float CalculateNumbersAdvantage(int attackersCount, int defendersCount)
         {
-            var advantage = (float)((float)attackersCount / (float)defendersCount);
-            if (advantage > 1.2f) return 1.2f;
-            if (advantage < 0.8f) return 0.8f;
+            float advantage = (float)((float)attackersCount / (float)defendersCount);
+
+            float highCap = (float)Config.CurrentConfig.NumbersAdvantageModifier.HighCap / 100;
+            float lowCap = (float)Config.CurrentConfig.NumbersAdvantageModifier.LowCap / 100;
+
+            if (advantage > highCap) return highCap;
+            if (advantage < lowCap) return lowCap;
+
             return advantage;
         }
 
@@ -103,22 +122,7 @@ namespace AdvancedAutoResolve.Simulation.Models
 
         internal static bool IsValidEventType(BattleTypes battleType)
         {
-            switch (battleType)
-            {
-                // normal battle
-                case BattleTypes.FieldBattle:
-                // village battles
-                case BattleTypes.Raid:
-                case BattleTypes.IsForcingSupplies:
-                case BattleTypes.IsForcingVolunteers:
-                // castle/town battles
-                case BattleTypes.Siege:
-                case BattleTypes.SiegeOutside:
-                case BattleTypes.SallyOut:
-                    return true;
-                default:
-                    return false;
-            }
+            return Config.CurrentConfig.ValidBattleTypes.Contains(battleType.ToString());
         }
     }
 }

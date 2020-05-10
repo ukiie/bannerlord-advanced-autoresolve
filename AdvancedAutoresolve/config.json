@@ -1,4 +1,163 @@
 {
-  "DetailedLogging": false,
-  "OnlyPlayerBattles": true
+  "Logging": {
+    "DetailedLogging": true,
+    "LogOnlyPlayerBattles": false
+  },
+  "EnabledForAI": true, // Currently, setting this to false will also disable the mod if player joins a battle started by 2 AI parties.
+  "ValidBattleTypes": [
+    // normal battle
+    "FieldBattle",
+    // village battles
+    "Raid",
+    "IsForcingSupplies",
+    "IsForcingVolunteers",
+    // castle/town battles
+    "Siege",
+    "SiegeOutside",
+    "SallyOut"
+  ],
+  "Tactics": [
+    // All values are in percentages
+    // TROOP TYPES: Any = 0,
+    //        Shock Infantry = 1, Troops that have no shield. Essentially, all troops that don't fit in with Skirmishers or Heavy Infantry
+    //        Skirmish Infantry = 2, Troops that have throwables, no shield, and total armor is less than 75
+    //        Heavy Infantry = 3, Troops that have shields
+    //        Ranged = 4, Archers and Crossbowmen
+    //        Light Cavalry = 5, Mounted Troops with total armor less than 75, or horse armor is less than 40
+    //        Heavy Cavalry = 6, Mounted Troops with total armor more than 75, or horse armor is more than 40
+    //        Horse Archers = 7, Mounter Troops that have ranged weapons
+
+
+    // DEFAULT
+    {
+      "Name": "NoTactic",
+      "TroopTypes": [ 0 ],
+      "Modifiers": {
+        "AttackBonus": -25,
+        "DefenseBonus": -25
+      }
+    },
+    // INFANTRY
+    {
+      "Name": "Charge",
+      "TroopTypes": [ 1, 2, 3 ],
+      "Modifiers": {
+        "AttackBonus": 20,
+        "DefenseBonus": -10
+      }
+    },
+    {
+      "Name": "Advance",
+      "TroopTypes": [ 1, 2, 3 ],
+      "Modifiers": {
+        "AttackBonus": 0,
+        "DefenseBonus": 20
+      }
+    },
+    {
+      "Name": "ShieldWall",
+      "TroopTypes": [ 1, 2, 3 ],
+      "Modifiers": {
+        "AttackBonus": -10,
+        "DefenseBonus": 50
+      }
+    },
+    // RANGED
+    {
+      "Name": "SkirmishInFrontOfInfantry",
+      "TroopTypes": [ 4 ],
+      "Modifiers": {
+        "AttackBonus": 50,
+        "DefenseBonus": -25
+      }
+    },
+    {
+      "Name": "SkirmishBehindInfantry",
+      "TroopTypes": [ 4 ],
+      "Modifiers": {
+        "AttackBonus": -25,
+        "DefenseBonus": 50
+      }
+    },
+    {
+      "Name": "SkirmishFromAFlank",
+      "TroopTypes": [ 4 ],
+      "Modifiers": {
+        "AttackBonus": 25,
+        "DefenseBonus": 25
+      }
+    },
+    // CAVALRY
+    {
+      "Name": "Charge",
+      "TroopTypes": [ 5, 6 ],
+      "Modifiers": {
+        "AttackBonus": 50,
+        "DefenseBonus": -15
+      }
+    },
+    {
+      "Name": "Flank",
+      "TroopTypes": [ 5, 6 ],
+      "Modifiers": {
+        "AttackBonus": 25,
+        "DefenseBonus": 10
+      }
+    },
+    {
+      "Name": "HitAndRun",
+      "TroopTypes": [ 5, 6 ],
+      "Modifiers": {
+        "AttackBonus": 25,
+        "DefenseBonus": -25
+      }
+    },
+    // HORSE ARCHERS
+    {
+      "Name": "Charge",
+      "TroopTypes": [ 7 ],
+      "Modifiers": {
+        "AttackBonus": 25,
+        "DefenseBonus": -25
+      }
+    },
+    {
+      "Name": "Skirmish",
+      "TroopTypes": [ 7 ],
+      "Modifiers": {
+        "AttackBonus": -25,
+        "DefenseBonus": 25
+      }
+    },
+    {
+      "Name": "HitAndRun",
+      "TroopTypes": [ 7 ],
+      "Modifiers": {
+        "AttackBonus": 50,
+        "DefenseBonus": -50
+      }
+    }
+  ],
+  // Values are in precentages
+  "SiegeDefendersModifiers": {
+    "AttackBonus": 50,
+    "DefenseBonus": 50
+  },
+  // Bonuses are calculated per 100 skill level. For example, if AttackBonus is 5, and party leader has lvl 100 in Tactics, the bonus will be 5%
+  "PartyLeaderModifiers": {
+    "TacticsModifiers": {
+      "AttackBonus": 5,
+      "DefenseBonus": 5
+    },
+    "LeadershipModifiers": {
+      "AttackBonus": 5,
+      "DefenseBonus": 5
+    }
+  },
+  // formula is 'modifier = attackersCount / defendersCount'. Caps are limiting the range of the modifier, so even if one party outnumbers the attackers at 10x, the modifier is still capped at HighCap.
+  // Values are in precentages
+  "NumbersAdvantageModifier": {
+    "HighCap": 30,
+    "LowCap": 30
+  }
 }
