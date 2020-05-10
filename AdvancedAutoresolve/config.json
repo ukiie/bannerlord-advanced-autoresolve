@@ -1,7 +1,7 @@
 {
   "Logging": {
-    "DetailedLogging": true,
-    "LogOnlyPlayerBattles": false
+    "DetailedLogging": false,
+    "LogOnlyPlayerBattles": true
   },
   "EnabledForAI": true, // Currently, setting this to false will also disable the mod if player joins a battle started by 2 AI parties.
   "ValidBattleTypes": [
