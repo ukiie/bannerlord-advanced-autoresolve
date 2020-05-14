@@ -37,12 +37,8 @@ namespace AdvancedAutoResolve.Simulation.Models
 
         internal int SimulateHit(MBGUID strikerTroopId, MBGUID strikedTroopId, float strikerAdvantage)
         {
-
             var attacker = GetTroop(strikerTroopId);
             var defender = GetTroop(strikedTroopId);
-
-            //var attackersGrouped = attacker.PartyModel.Troops.GroupBy(t => t.TestTroopType).ToList();
-            //var defendersGrouped = defender.PartyModel.Troops.GroupBy(t => t.TestTroopType).ToList();
 
             var troopNumbersAdvantage = CalculateNumbersAdvantage(attacker.PartyModel.Troops.Count, defender.PartyModel.Troops.Count);
 
@@ -58,8 +54,8 @@ namespace AdvancedAutoResolve.Simulation.Models
             var defenderLeaderDefenseModifier = defender.GetDefenseModifierFromLeader();
 
             bool makesSenseToAttackThisUnit = attacker.DoesItMakeSenseToAttackThisUnit(defender);
-            //if it doesn't make sense to attack current defender, reduce damage by 90%
-            var makesSenseToAttackUnitModifier = makesSenseToAttackThisUnit ? 1f : 0.1f;
+            //if it doesn't make sense to attack current defender, reduce damage by the value from config
+            var makesSenseToAttackUnitModifier = makesSenseToAttackThisUnit ? 1f : 1f + (float)Config.CurrentConfig.DoesntMakeSenseToAttackModifier / 100;
 
             var finalAttackerPower = attackerPower 
                 * attackerTacticModifiers.AttackBonus 
@@ -78,9 +74,6 @@ namespace AdvancedAutoResolve.Simulation.Models
             return damage;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         private float CalculateNumbersAdvantage(int attackersCount, int defendersCount)
         {
             float advantage = (float)((float)attackersCount / (float)defendersCount);

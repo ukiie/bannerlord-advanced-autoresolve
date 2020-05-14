@@ -26,6 +26,8 @@ namespace AdvancedAutoResolve.Helpers
                     return new Color(0.12f, 0.73f, 1f);
                 case DisplayTextStyle.Warning:
                     return new Color(1, 0, 0);
+                case DisplayTextStyle.Success:
+                    return new Color(0, 1, 0);
                 default:
                     return Color.White;
             }
@@ -36,6 +38,7 @@ namespace AdvancedAutoResolve.Helpers
     {
         Normal,
         Info,
+        Success,
         Warning
     }
 }

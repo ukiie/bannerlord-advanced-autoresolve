@@ -7,6 +7,7 @@ using TaleWorlds.Library;
 using TaleWorlds.CampaignSystem;
 using static TaleWorlds.CampaignSystem.MapEvent;
 using AdvancedAutoResolve.Configuration;
+using AdvancedAutoResolve.Helpers;
 
 namespace AdvancedAutoResolve
 {
@@ -23,24 +24,29 @@ namespace AdvancedAutoResolve
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
-            InformationManager.DisplayMessage(new InformationMessage("Loaded AdvancedAutoresolve", new Color(0, 1, 0)));
+            if (Config.ConfigLoaded)
+            {
+                MessageHelper.DisplayText("Loaded AdvancedAutoresolve", DisplayTextStyle.Success);
+            }
+            else
+            {
+                MessageHelper.DisplayText(Config.ConfigError, DisplayTextStyle.Warning);
+            }
         }
 
         public override void OnCampaignStart(Game game, object starterObject)
         {
-            if (game.GameType is Campaign)
+            if (game.GameType is Campaign && starterObject is CampaignGameStarter starter)
             {
-                CampaignGameStarter gameInitializer = (CampaignGameStarter)starterObject;
-                AddBehaviors(gameInitializer);
+                AddBehaviors(starter);
             }
         }
 
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
-            if (game.GameType is Campaign)
+            if (game.GameType is Campaign && gameStarterObject is CampaignGameStarter starter)
             {
-                CampaignGameStarter gameStarterObject2 = (CampaignGameStarter)gameStarterObject;
-                AddBehaviors(gameStarterObject2);
+                AddBehaviors(starter);
             }
         }
 

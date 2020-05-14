@@ -14,6 +14,8 @@ namespace AdvancedAutoResolve.Configuration
 {
     internal class Config
     {
+        internal static bool ConfigLoaded { get; set; }
+        internal static string ConfigError { get; set; }
         internal static Config CurrentConfig { get; private set; }
 
         [JsonProperty]
@@ -37,6 +39,9 @@ namespace AdvancedAutoResolve.Configuration
         [JsonProperty]
         internal List<string> ValidBattleTypes { get; set; }
 
+        [JsonProperty]
+        internal int DoesntMakeSenseToAttackModifier { get; set; }
+
         internal bool ShouldLogThis(bool isPlayerInvolved = true) => Logging.DetailedLogging && (Logging.LogOnlyPlayerBattles && isPlayerInvolved || !Logging.LogOnlyPlayerBattles);
 
         private static readonly string ConfigFilePath =
@@ -53,7 +58,16 @@ namespace AdvancedAutoResolve.Configuration
                 if (configExists)
                 {
                     config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigFilePath));
+                    ConfigLoaded = true;
                 }
+                else
+                {
+                    throw new Exception($"AdvancedAutoResolve config not found at {ConfigFilePath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                ConfigError = "Failed to load AdvancedAutoresolve config. Using default values. Error: " + ex.Message;
             }
             finally
             {
@@ -78,7 +92,8 @@ namespace AdvancedAutoResolve.Configuration
                     BattleTypes.IsForcingVolunteers.ToString(),
                     BattleTypes.Siege.ToString(),
                     BattleTypes.SiegeOutside.ToString(),
-                    BattleTypes.SallyOut.ToString() },
+                    BattleTypes.SallyOut.ToString() 
+                },
                 Tactics = new List<Tactic>
                 {
                     new Tactic("NoTactic", new Modifiers(0.75f, 0.75f), new List<TroopType>{ TroopType.Any }),
@@ -99,7 +114,7 @@ namespace AdvancedAutoResolve.Configuration
                     new Tactic("Skirmish", new Modifiers(0.75f, 1.25f), new List<TroopType>{ TroopType.HorseArcher }),
                     new Tactic("HitAndRun", new Modifiers(1.5f, 0.5f), new List<TroopType>{ TroopType.HorseArcher }),
                 },
-                SiegeDefendersModifiers = new Modifiers(1.25f, 1.75f),
+                SiegeDefendersModifiers = new Modifiers(1.5f, 1.5f),
                 PartyLeaderModifiers = new PartyLeaderModifiers()
                 {
                     TacticsModifiers = new Modifiers(0.05f, 0.05f),
@@ -107,9 +122,10 @@ namespace AdvancedAutoResolve.Configuration
                 },
                 NumbersAdvantageModifier = new NumbersAdvantageModifier()
                 {
-                    HighCap = 20,
-                    LowCap = 20
+                    HighCap = 30,
+                    LowCap = 30
                 },
+                DoesntMakeSenseToAttackModifier = -90
             };
         }
     }

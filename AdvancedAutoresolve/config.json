@@ -159,5 +159,6 @@
   "NumbersAdvantageModifier": {
     "HighCap": 30,
     "LowCap": 30
-  }
+  },
+  "DoesntMakeSenseToAttackModifier" : -90
 }
