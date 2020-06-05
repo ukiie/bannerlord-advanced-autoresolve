@@ -2,7 +2,7 @@
 <Module>
   <Name value="Advanced AutoResolve"/>
   <Id value="AdvancedAutoResolve"/>
-  <Version value="v1.2.0"/>
+  <Version value="v1.2.2"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <DependedModules>
